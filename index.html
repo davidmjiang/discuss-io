@@ -2,10 +2,6 @@
 <html>
 <head>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src = "model.js"></script>
-  <script src = "view.js"></script>
-  <script src = "controller.js"></script>
-  <script src = "script.js"></script>
 
   <link rel="stylesheet" href ="styles.css">
   <!-- Latest compiled and minified CSS -->
@@ -21,14 +17,14 @@
 				<label for="question">Question:</label>
 				<textarea id="question"></textarea>
 				<div class="all-answers">
+					<a id="add-answer">Add answer choice</a>
 					<div class="new-answer" data-id="1">
-						<label for="options">Options:</label>
 						<select id="options">
 							<option selected value=1>May Select</option>
 							<option value=2>Must Select</option>
 							<option value=3>Terminate if Select</option>
 						</select>
-						<input type="text" placeholder="Enter answer option"><button class="btn btn-default btn-sm"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span></button>
+						<input type="text" placeholder="Enter answer option"><button class="btn btn-default btn-sm delete-answer"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span></button>
 					</div>
 				</div>
 				Allow "none of the above" <input type="checkbox" value="none" name="options"><br/>
@@ -40,5 +36,9 @@
 		<div id="all-questions">
 		</div>
 	</div>
+	<script src = "model.js"></script>
+  <script src = "view.js"></script>
+  <script src = "controller.js"></script>
+  <script src = "script.js"></script>
 </body>
 </html>

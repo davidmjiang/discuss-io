@@ -8,19 +8,22 @@ APP.ListenersModule = (function(){
 		_newListener();
 		_cancelListener();
 		_enterListener();
+		_deleteAnswerListener();
+		_addAnswerListener();
 	};
 
 	var _newListener = function(){
 		$('#open-new').click(function(e){
 			e.preventDefault();
-			$('#new-question').show();
+			$('.new-form').show();
 		});
 	};
 
 	var _cancelListener = function(){
-		$('#cancel').click(function(e){
+		$('.new-form').on('click', '#cancel',
+			function(e){
 			e.preventDefault();
-			$('#new-question').hide();
+			closeForm();
 		});
 	};
 
@@ -31,24 +34,37 @@ APP.ListenersModule = (function(){
 						e.preventDefault();
 						_addAnswer();
 					}
-			})
+			});
+		});
+	};
+
+	var _addAnswerListener = function(){
+		$('#new-question').on('click', '#add-answer', function(e){
+			e.preventDefault();
+			_addAnswer();
 		});
 	};
 
 	var _id = 2;
 
+	var newAnswer = $('.new-answer').first().html();
+
 	var _addAnswer = function(){
-		var $newAnswer = $('.new-answer').clone().eq(0);
-		$newAnswer.attr('data-id', _id);
-		$('.all-answers').append($newAnswer);
+		var toAdd = $('<div></div>')
+		.attr('data-id', _id)
+		.addClass('new-answer')
+		.html(newAnswer);
+		$('.all-answers').append(toAdd);
 		$('div[data-id='+_id+'] > input').val("");
 		_id ++;
 	};
 
 	var _saveListener = function(){
-		$("#save").click(function(e){
+		$('.new-form').on('click', '#save', 
+		function(e){
 			e.preventDefault();
 			var data = {};
+			//validate question text
 			data.text = $("#question").val();
 			data.options = _getOptions();
 			data.answers = _getAnswers();
@@ -58,9 +74,13 @@ APP.ListenersModule = (function(){
 		});
 	};
 
+	//hold on to empty question form
+	var $questionForm = $('#new-question').first().clone().html();
+
 	var closeForm = function(){
+		$('.new-form').hide();
 		//clear the form
-		$('#new-question').hide();
+		$('#new-question').html($questionForm);
 	};
 
 	var render = function(){
@@ -84,6 +104,7 @@ APP.ListenersModule = (function(){
 		var answers = [];
 		var counter = 1;
 		while($('div[data-id='+counter+']').length){
+			//validate
 			var answer = {};
 			answer.text = $("div[data-id="+counter+"] > input").val();
 			answer.options = $('div[data-id='+counter+"] > select").val();
@@ -91,6 +112,14 @@ APP.ListenersModule = (function(){
 			counter ++;
 		}
 		return answers;
+	};
+
+	var _deleteAnswerListener = function(){
+		$('.new-form').on('click', '.delete-answer', function(event){
+			event.preventDefault();
+			var element = $(event.target);
+			$(element.closest('.new-answer')).remove();
+		});
 	};
 
 	return{init: init};
