@@ -14,6 +14,14 @@ APP.ListenersModule = (function(){
 		_editQuestionListener();
 	};
 
+	var setFlash = function(message){
+		$(".flash").text(message).slideDown();
+		setTimeout(function(){
+				$(".flash").slideUp();
+			}, 5000);
+
+	};
+
 	var _newListener = function(){
 		$('#open-new').click(function(e){
 			e.preventDefault();
@@ -25,6 +33,11 @@ APP.ListenersModule = (function(){
 		$('.new-form').on('click', '#cancel',
 			function(e){
 			e.preventDefault();
+			if(!creating){
+				enableButtons();
+				APP.QuestionsModule.clearDeleteQ();
+				creating = true;
+			}
 			closeForm();
 		});
 	};
@@ -66,27 +79,54 @@ APP.ListenersModule = (function(){
 		$('.new-form').on('click', '#save', 
 		function(e){
 			e.preventDefault();
-			if(creating){
-				createQuestion();
+			//validate form
+			var errors = checkValidForm();
+			if(errors.length){
+				$('#errors').text("Question could not be saved because of these errors: " + errors.join(" / ")).show();
 			}
 			else{
-				editQuestion();
+				if(creating){
+					createQuestion();
+				}
+				else{
+					editQuestion();
+				}
 			}
 		});
 	};
 
+	var checkValidForm = function(){
+		var messages = []; 
+		if ($("#question").val() === ""){
+			messages.push("Question cannot be blank");
+		}
+		if ($(".new-answer").length + $(".existing-answer").length < 2){
+			messages.push("Question must have at least 2 answers");
+		}
+		$.each($('.new-answer'), function(){
+			var dataId = $(this).attr('data-id');
+			var text = $(".new-answer[data-id=" + dataId +"] > input").val();
+			if(!text){
+				messages.push("Answer cannot be blank");
+			}
+		});
+		return messages;
+	};
+
 	var createQuestion = function(){
 		var data = {};
-		//validate question text
 		data.text = $("#question").val();
 		data.options = _getOptions();
 		data.answers = _getAnswers();
 		var question = APP.QuestionsModule.create(data);
 		closeForm();
+		setFlash("Question created");
 		addRow(question);
 	};
 
 	var editQuestion = function(){
+		//delete answers from the queue
+		APP.QuestionsModule.deleteAnswers();
 		//find data-id of #question
 		var id = $("#question").attr('data-id');
 		//set question text to $(#question).val()
@@ -102,8 +142,10 @@ APP.ListenersModule = (function(){
 		//for each $(.existing-answer), edit the question text and options
 		//for each $(.new-answer), create the answer and add it to question.answers
 		creating = true;
+		enableButtons();
 		//update the question row
 		$(".question-row[data-id="+ id+"] > .question-text").text(data.text);
+		setFlash("Question edited");
 		//close the form
 		closeForm();
 	};
@@ -121,9 +163,19 @@ APP.ListenersModule = (function(){
 
 	var deleteButton = "<button class='btn btn-danger delete-question'>Delete</button>";
 
+	var disableButtons = function(){
+		$(".edit-question").prop("disabled", true);
+		$(".delete-question").prop("disabled", true);
+	};
+
+	var enableButtons = function(){
+		$(".edit-question").prop("disabled", false);
+		$(".delete-question").prop("disabled", false);
+	};
+
 	var addRow = function(q){
 		console.log(q);
-		var $newRow = $("<div class='row question-row' data-id=" + q.id + ">")
+		var $newRow = $("<div class='row question-row' data-id=" + q.id + " ui-state-default>")
 		var $newQuestion = $("<div class='col-md-6 question-text'></div")
 		.text(q.text);
 		var $newButtons = $("<div class='col-md-6'></div")
@@ -145,11 +197,15 @@ APP.ListenersModule = (function(){
 	var _getAnswers = function(){
 		var answers = [];
 		$.each($('.new-answer'), function(){
-			var answer = {};
 			var dataId = $(this).attr('data-id');
-			answer.text = $(".new-answer[data-id=" + dataId +"] > input").val();
-			answer.options = $(".new-answer[data-id=" + dataId +"] > select").val();
-			answers.push(answer);
+			var text = $(".new-answer[data-id=" + dataId +"] > input").val();
+			//only add if not blank
+			if(text){
+				var answer = {};
+				answer.text = text;
+				answer.options = $(".new-answer[data-id=" + dataId +"] > select").val();
+				answers.push(answer);
+			}
 		});
 		return answers;
 	};
@@ -175,7 +231,7 @@ APP.ListenersModule = (function(){
 			var element = $(event.target);
 			if(element.closest('.existing-answer').length){
 				var parent = (element.closest('.existing-answer'));
-				APP.QuestionsModule.deleteAnswer(parent.attr('data-id'));
+				APP.QuestionsModule.deleteQueue(parent.attr('data-id'));
 			}
 			else{
 				parent = (element.closest('.new-answer'));
@@ -192,8 +248,11 @@ APP.ListenersModule = (function(){
 			APP.QuestionsModule.delete(parent.attr('data-id'));
 			//remove from view
 			parent.remove();
+			setFlash("Question deleted");
 		});
 	};
+
+ var tempQuestion;
 
  var _editQuestionListener = function(){
  	$('#all-questions').on('click', '.edit-question', function(e){
@@ -203,6 +262,9 @@ APP.ListenersModule = (function(){
  		var question = APP.QuestionsModule.getQuestion(id);
  		_populateEditForm(question);
  		creating = false;
+ 		//disable buttons
+ 		disableButtons();
+ 		tempQuestion = question;
  		//show the form
  		$('.new-form').show();
  	});

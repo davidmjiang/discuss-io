@@ -20,6 +20,8 @@ APP.QuestionsModule = (function(){
 
 	var _answerId;
 
+	var _deleteQ = [];
+
 	function getQuestionID(){
 		if(_questionId){
 			_questionId ++;
@@ -80,6 +82,10 @@ APP.QuestionsModule = (function(){
 				var a = _answers[answer.id];
 				a.text = answer.text;
 				a.options = answer.options;
+				//delete if empty
+				if(a.text === ""){
+					deleteAnswer(a.id);
+				}
 			}
 			else{
 				 var newA = new Answer(answer.text, answer.options, question.id);
@@ -112,12 +118,29 @@ APP.QuestionsModule = (function(){
 		}
 	};
 
+	var deleteAnswers = function(){
+		_deleteQ.forEach(function(el){
+			deleteAnswer(el);
+		});
+		_deleteQ = [];
+	};
+
+	var deleteQueue = function(id){
+		_deleteQ.push(id);
+	};
+
+	var clearDeleteQ = function(){
+		_deleteQ = [];
+	};
+
 	return{
 		create: createQuestion,
 		getQuestion: getQuestion,
 		edit: editQuestion,
 		delete: deleteQuestion,
-		deleteAnswer: deleteAnswer
+		deleteAnswers: deleteAnswers,
+		deleteQueue: deleteQueue,
+		clearDeleteQ: clearDeleteQ
 	};
 })();
 

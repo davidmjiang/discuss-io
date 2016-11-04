@@ -1,6 +1,17 @@
 "use strict";
 var APP = APP || {};
 
-APP.ControllerModule = (function(){
-	
+APP.DragDrop = (function(){
+	var init = function(){
+		setup();
+	};
+
+	var setup = function(){
+		$( "#all-questions" ).sortable();
+    $( "#all-questions" ).disableSelection();
+  };
+
+	return {
+		init: init
+	};
 })();

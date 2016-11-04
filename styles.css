@@ -3,3 +3,11 @@
 	padding: 5px;
 	margin: 5px;
 }
+
+.flash{
+	display: none;
+}
+
+#errors{
+	display: none;
+}
