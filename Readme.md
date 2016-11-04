@@ -1,4 +1,6 @@
-A screening questions tool created with Javascript and jQuery. 
+A screening questions tool created with Javascript and jQuery.
+
+[Click here to preview](discuss.dj.surge.sh)
 
 Features:
 * Adding/removing/editing of screening questions
