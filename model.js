@@ -2,17 +2,18 @@
 var APP = APP || {};
 
 APP.QuestionsModule = (function(){
-	function Question(text, answers, options){
+	function Question(text, options, answers){
 		this.id = getQuestionID();
 		this.text = text;
-		this.answers = answers;
+		this.answers = answers || [];
 		this.options = options;
 	}
 
-	function Answer(text, options){
+	function Answer(text, options, questionId){
 		this.id = getAnswerID();
 		this.text = text;
 		this.options = options;
+		this.questionId = questionId;
 	}
 
 	var _questionId;
@@ -25,7 +26,8 @@ APP.QuestionsModule = (function(){
 			return _questionId;
 		}
 		else{
-			return 0;
+			_questionId = 1;
+			return 1;
 		}
 	}
 
@@ -35,7 +37,8 @@ APP.QuestionsModule = (function(){
 			return _answerId;
 		}
 		else{
-			return 0;
+			_answerId = 1;
+			return 1;
 		}
 	}
 
@@ -44,30 +47,31 @@ APP.QuestionsModule = (function(){
 	var _answers = {};
 
 	var createQuestion = function (data){
-		var answers = _createAnswers(data);
-		var q = new Question(data.text, answers, data.options);
+		var q = new Question(data.text, data.options);
+		 _createAnswers(data, q);
 		_questions[q.id] = q;
+		return q;
 	};
 
-	var _createAnswers = function (data){
-		var answers = [];
+	var _createAnswers = function (data, q){
+		var answers = q.answers;
 		data.answers.forEach(function(answer){
-			var a = new Answer(answer.text, answer.options);
+			var a = new Answer(answer.text, answer.options, q.id);
 			answers.push(a);
 			_answers[a.id] = a;
 		});
-		return answers;
 	};
 
-	var getAll = function(){
-		return _questions;
-	};
+	// var getAll = function(){
+	// 	return _questions;
+	// };
 
 	var editQuestion = function(id, data){
 		var question = _questions[id];
 		question.text = data.text;
 		question.options = data.options;
 		_editAnswers(question, data);
+		console.log(question);
 	};
 
 	var _editAnswers = function(question, data){
@@ -78,21 +82,42 @@ APP.QuestionsModule = (function(){
 				a.options = answer.options;
 			}
 			else{
-				 var newA = new Answer(answer.text, answer.options);
+				 var newA = new Answer(answer.text, answer.options, question.id);
+				_answers[newA.id] = newA;
 				question.answers.push(newA);
 			}
 		});
+	};
+
+	var getQuestion = function(id){
+		return _questions[id];
 	};
 
 	var deleteQuestion = function(id){
 		delete _questions[id];
 	};
 
+	var deleteAnswer = function(id){
+		if(id){
+			var answer = _answers[id];
+			var question = _questions[answer.questionId];
+			//delete from questions object
+			for(var i = 0; i < question.answers.length; i++){
+				if(question.answers[i].id === parseInt(id)){
+					question.answers.splice(i,1);
+					break;
+				}
+			}
+			delete _answers[id];
+		}
+	};
+
 	return{
 		create: createQuestion,
-		getAll: getAll,
+		getQuestion: getQuestion,
 		edit: editQuestion,
-		delete: deleteQuestion
+		delete: deleteQuestion,
+		deleteAnswer: deleteAnswer
 	};
 })();
 
