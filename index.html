@@ -10,37 +10,60 @@
 </head>
 <body>
 	<div class="container">
-		<div class="flash alert alert-success"></div>
-		<button class="btn btn-info" id="open-new">New Question <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-		<div>
-		<div class="new-form">
-			<form id="new-question">
-				<label for="question">Question:</label>
-				<textarea id="question"></textarea>
-				<div class="all-answers">
-					<a id="add-answer">Add answer choice</a>
-					<div class="new-answer" data-id="1">
-						<select id="options">
-							<option selected value=1>May Select</option>
-							<option value=2>Must Select</option>
-							<option value=3>Terminate if Select</option>
-						</select>
-						<input type="text" placeholder="Enter answer option"><button class="btn btn-default btn-sm delete-answer"><span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span></button>
+		<div class="row">
+			<div class="col-md-6">
+				<h1>Screening Questions</h1>
+			</div>
+			<div class="col-md-6">
+				<div class="flash alert alert-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp<span class="flash-message"></span></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<button class="btn btn-info" id="open-new">New Question <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+			</div>
+			<div class="col-md-6">
+				<div class="new-form">
+					<form id="new-question">
+						<label>Question: <textarea id="question" cols="40"></textarea></label>
+						<div class="all-answers">
+							<a id="add-answer">Add answer choice</a>
+							<div class="new-answer" data-id="1">
+								<select id="options">
+									<option selected value=1>May Select</option>
+									<option value=2>Must Select</option>
+									<option value=3>Terminate if Select</option>
+								</select>
+								<input type="text" placeholder="Enter answer option" size="35"><span class="glyphicon glyphicon-remove delete-answer" aria-hidden="true"></span>
+							</div>
+						</div>
+						<ul class="checkbox-container">
+							<li>
+								<div><label for="none">Allow "none of the above"</label></div>
+								<input type="checkbox" id="none" value="none" name="options">
+							</li>
+							<li>
+								<div><label for="shuffle">Shuffle order option</label></div>
+								<input type="checkbox" id="shuffle" value="shuffle" name="options"><br/>
+							</li>
+						</ul>
+						
+						<div class="btn-toolbar form-submit">
+							<button class="btn btn-default" id="cancel">Cancel</button>
+							<button class="btn btn-success" id="save">Save</button>
+						</div>
+						<div class="alert alert-warning" id="errors"></div>
+					</form>
 					</div>
 				</div>
-				Allow "none of the above" <input type="checkbox" value="none" name="options"><br/>
-				Shuffle order option <input type="checkbox" value="shuffle" name="options"><br/>
-			<button class="btn btn-default" id="cancel">Cancel</button>
-			<button class="btn btn-success" id="save">Save</button>
-			<div class="alert alert-warning" id="errors"></div>
-			</form>
-		</div>
-		<div id="all-questions">
+			</div>
+		<div class="row">
+			<div id="all-questions">
 		</div>
 	</div>
 	<script src = "model.js"></script>
   <script src = "view.js"></script>
-  <script src = "controller.js"></script>
+  <script src = "dragDrop.js"></script>
   <script src = "script.js"></script>
 </body>
 </html>

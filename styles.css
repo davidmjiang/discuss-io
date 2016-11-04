@@ -10,4 +10,38 @@
 
 #errors{
 	display: none;
+	clear: both;
+}
+
+.new-form{
+	display: none;
+}
+
+.delete-answer, #add-answer{
+	cursor: pointer;
+}
+
+label textarea{
+	vertical-align: top;
+}
+
+.form-submit{
+	float: right;
+}
+
+.checkbox-container{
+	padding: 0px;
+}
+
+.checkbox-container li{
+	display: table-row;
+}
+
+.checkbox-container li div{
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.checkbox-container li div label{
+	margin-right: 10px;
 }

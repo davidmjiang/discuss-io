@@ -15,7 +15,8 @@ APP.ListenersModule = (function(){
 	};
 
 	var setFlash = function(message){
-		$(".flash").text(message).slideDown();
+		$(".flash-message").text(message)
+		$(".flash").slideDown();
 		setTimeout(function(){
 				$(".flash").slideUp();
 			}, 5000);
@@ -129,7 +130,6 @@ APP.ListenersModule = (function(){
 		APP.QuestionsModule.deleteAnswers();
 		//find data-id of #question
 		var id = $("#question").attr('data-id');
-		//set question text to $(#question).val()
 		var data = {};
 		data.text = $("#question").val();
 		data.options = _getOptions();
@@ -137,10 +137,6 @@ APP.ListenersModule = (function(){
 		var oldAnswers = _getOldAnswers();
 		data.answers = newAnswers.concat(oldAnswers);
 		APP.QuestionsModule.edit(id, data);
-		//data.questions: combo of new and existing questions. if existing, include the answer id
-		//set question options to getOptions()
-		//for each $(.existing-answer), edit the question text and options
-		//for each $(.new-answer), create the answer and add it to question.answers
 		creating = true;
 		enableButtons();
 		//update the question row
@@ -159,9 +155,9 @@ APP.ListenersModule = (function(){
 		$('#new-question').html($questionForm);
 	};
 
-	var editButton = "<button class='btn btn-default edit-question'>Edit</button>";
+	var editButton = "<button class='btn btn-info edit-question'><span class='glyphicon glyphicon-edit' aria-hidden='true'></span>&nbspEdit</button>";
 
-	var deleteButton = "<button class='btn btn-danger delete-question'>Delete</button>";
+	var deleteButton = "<button class='btn btn-danger delete-question'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span>&nbspDelete</button>";
 
 	var disableButtons = function(){
 		$(".edit-question").prop("disabled", true);
@@ -178,9 +174,11 @@ APP.ListenersModule = (function(){
 		var $newRow = $("<div class='row question-row' data-id=" + q.id + " ui-state-default>")
 		var $newQuestion = $("<div class='col-md-6 question-text'></div")
 		.text(q.text);
-		var $newButtons = $("<div class='col-md-6'></div")
+		var $newButtons = $("<div class='col-md-6'></div");
+		var $toolbar = $("<div class='btn-toolbar'></div>")
 		.append($(editButton))
 		.append($(deleteButton));
+		$newButtons.append($toolbar);
 		$newRow.append($newQuestion)
 		.append($newButtons);
 		$('#all-questions').append($newRow);
@@ -252,8 +250,6 @@ APP.ListenersModule = (function(){
 		});
 	};
 
- var tempQuestion;
-
  var _editQuestionListener = function(){
  	$('#all-questions').on('click', '.edit-question', function(e){
  		var element = $(e.target);
@@ -264,7 +260,6 @@ APP.ListenersModule = (function(){
  		creating = false;
  		//disable buttons
  		disableButtons();
- 		tempQuestion = question;
  		//show the form
  		$('.new-form').show();
  	});
